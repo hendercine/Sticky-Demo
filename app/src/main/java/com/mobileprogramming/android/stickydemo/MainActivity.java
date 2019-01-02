@@ -8,7 +8,6 @@
 
 package com.mobileprogramming.android.stickydemo;
 
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -38,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -47,12 +46,10 @@ public class MainActivity extends AppCompatActivity {
                 .setAction("Action", null).show());
 
         mArFragment = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.sceneform_fragment);
-        if (mArFragment != null) {
             mArFragment
                     .getArSceneView()
                     .getScene()
                     .addOnUpdateListener(frameTime -> mArFragment.onUpdate(frameTime));
-        }
         onUpdate();
     }
 
@@ -81,16 +78,16 @@ public class MainActivity extends AppCompatActivity {
     // Update the tracking state. If not tracking, remove pointer until
     // restored. If Tracking, check for plane hit and enable pointer.
     private void onUpdate() {
-
         boolean trackingChanged = updateTracking();
         View contentView = findViewById(android.R.id.content);
         if (trackingChanged) {
-            contentView.getOverlay().add(mPointer);
-        } else {
-            contentView.getOverlay().remove(mPointer);
+            if (mIsTracking) {
+                contentView.getOverlay().add(mPointer);
+            } else {
+                contentView.getOverlay().remove(mPointer);
+            }
+            contentView.invalidate();
         }
-
-        contentView.invalidate();
 
         if (mIsTracking) {
             boolean hitTestChanged = updateHitTest();
@@ -104,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
     // Use ARCore camera state to check if state has changed
     private boolean updateTracking() {
         Frame frame = mArFragment.getArSceneView().getArFrame();
-        boolean wasTracking =  mIsTracking;
+        boolean wasTracking = mIsTracking;
         mIsTracking = frame != null &&
                 frame.getCamera().getTrackingState() == TrackingState.TRACKING;
         return mIsTracking != wasTracking;
@@ -113,12 +110,12 @@ public class MainActivity extends AppCompatActivity {
     // Detect hits
     private boolean updateHitTest() {
         Frame frame = mArFragment.getArSceneView().getArFrame();
-        Point point = getScreenCenter();
+        android.graphics.Point pt = getScreenCenter();
         List<HitResult> hits;
         boolean wasHitting = mIsHitting;
         mIsHitting = false;
         if (frame != null) {
-            hits = frame.hitTest(point.x, point.y);
+            hits = frame.hitTest(pt.x, pt.y);
             for (HitResult hit : hits) {
                 Trackable trackable = hit.getTrackable();
                 if (trackable instanceof Plane &&

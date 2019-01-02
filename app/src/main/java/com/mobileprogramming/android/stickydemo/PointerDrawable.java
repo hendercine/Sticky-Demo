@@ -12,15 +12,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
-import android.graphics.PixelFormat;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
  * StickyDemo created by jamesmobileprogramming on 12/28/18.
  */
-public class PointerDrawable extends Drawable {
+public class PointerDrawable extends android.graphics.drawable.Drawable {
 
     private final Paint mPaint = new Paint();
     private boolean mEnabled;
@@ -53,7 +51,7 @@ public class PointerDrawable extends Drawable {
 
     @Override
     public int getOpacity() {
-        return PixelFormat.UNKNOWN;
+        return 0;
     }
 
     public boolean isEnabled() {
@@ -61,6 +59,6 @@ public class PointerDrawable extends Drawable {
     }
 
     public void setEnabled(boolean enabled) {
-        mEnabled = enabled;
+        this.mEnabled = enabled;
     }
 }
